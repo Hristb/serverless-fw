@@ -1,0 +1,9 @@
+# Dependencias
+node_modules/
+
+# Archivos de logs
+npm-debug.log
+yarn-error.log
+
+# Carpetas temporales
+.serverless/
