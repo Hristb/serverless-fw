@@ -4,7 +4,7 @@
     "servicePath": "D:\\Proyectos\\SERVERLESS\\serverless-fw\\serverless.yml",
     "serviceConfigFileName": "serverless.yml",
     "service": {
-      "service": "test",
+      "service": "pizzaApp",
       "provider": {
         "name": "aws",
         "runtime": "nodejs20.x",
@@ -15,10 +15,10 @@
           "AWSTemplateFormatVersion": "2010-09-09",
           "Description": "The AWS CloudFormation template for this Serverless application",
           "Resources": {
-            "HelloLogGroup": {
+            "NewOrderLogGroup": {
               "Type": "AWS::Logs::LogGroup",
               "Properties": {
-                "LogGroupName": "/aws/lambda/test-dev-hello"
+                "LogGroupName": "/aws/lambda/pizzaApp-dev-newOrder"
               }
             },
             "IamRoleLambdaExecution": {
@@ -46,7 +46,7 @@
                       "Fn::Join": [
                         "-",
                         [
-                          "test",
+                          "pizzaApp",
                           "dev",
                           "lambda"
                         ]
@@ -64,7 +64,7 @@
                           ],
                           "Resource": [
                             {
-                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*"
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*"
                             }
                           ]
                         },
@@ -75,7 +75,7 @@
                           ],
                           "Resource": [
                             {
-                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*:*"
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*:*"
                             }
                           ]
                         }
@@ -88,7 +88,7 @@
                   "Fn::Join": [
                     "-",
                     [
-                      "test",
+                      "pizzaApp",
                       "dev",
                       {
                         "Ref": "AWS::Region"
@@ -99,16 +99,16 @@
                 }
               }
             },
-            "HelloLambdaFunction": {
+            "NewOrderLambdaFunction": {
               "Type": "AWS::Lambda::Function",
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
-                  "S3Key": "serverless/test/dev/1759201964608-2025-09-30T03:12:44.608Z/test.zip"
+                  "S3Key": "serverless/pizzaApp/dev/1759203570028-2025-09-30T03:39:30.028Z/pizzaApp.zip"
                 },
-                "Handler": "handler.hello",
+                "Handler": "handler.newOrder",
                 "Runtime": "nodejs20.x",
-                "FunctionName": "test-dev-hello",
+                "FunctionName": "pizzaApp-dev-newOrder",
                 "MemorySize": 1024,
                 "Timeout": 6,
                 "Role": {
@@ -119,23 +119,23 @@
                 }
               },
               "DependsOn": [
-                "HelloLogGroup"
+                "NewOrderLogGroup"
               ]
             },
-            "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg": {
+            "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
-                  "Ref": "HelloLambdaFunction"
+                  "Ref": "NewOrderLambdaFunction"
                 },
-                "CodeSha256": "ZsXEDYQrUM0gKpVDnXkFWbegzPHC4o2YpFTv9Wec8qo="
+                "CodeSha256": "1r2XlrkwDIyIyg+t0QmSLGyCBlMulRSBDLkrL+hANrA="
               }
             },
             "HttpApi": {
               "Type": "AWS::ApiGatewayV2::Api",
               "Properties": {
-                "Name": "dev-test",
+                "Name": "dev-pizzaApp",
                 "ProtocolType": "HTTP"
               }
             },
@@ -152,12 +152,12 @@
                 }
               }
             },
-            "HelloLambdaPermissionHttpApi": {
+            "NewOrderLambdaPermissionHttpApi": {
               "Type": "AWS::Lambda::Permission",
               "Properties": {
                 "FunctionName": {
                   "Fn::GetAtt": [
-                    "HelloLambdaFunction",
+                    "NewOrderLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -189,7 +189,7 @@
                 }
               }
             },
-            "HttpApiIntegrationHello": {
+            "HttpApiIntegrationNewOrder": {
               "Type": "AWS::ApiGatewayV2::Integration",
               "Properties": {
                 "ApiId": {
@@ -198,7 +198,7 @@
                 "IntegrationType": "AWS_PROXY",
                 "IntegrationUri": {
                   "Fn::GetAtt": [
-                    "HelloLambdaFunction",
+                    "NewOrderLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -206,42 +206,42 @@
                 "TimeoutInMillis": 30000
               }
             },
-            "HttpApiRouteGet": {
+            "HttpApiRoutePostOrder": {
               "Type": "AWS::ApiGatewayV2::Route",
               "Properties": {
                 "ApiId": {
                   "Ref": "HttpApi"
                 },
-                "RouteKey": "GET /",
+                "RouteKey": "POST /order",
                 "Target": {
                   "Fn::Join": [
                     "/",
                     [
                       "integrations",
                       {
-                        "Ref": "HttpApiIntegrationHello"
+                        "Ref": "HttpApiIntegrationNewOrder"
                       }
                     ]
                   ]
                 }
               },
-              "DependsOn": "HttpApiIntegrationHello"
+              "DependsOn": "HttpApiIntegrationNewOrder"
             }
           },
           "Outputs": {
             "ServerlessDeploymentBucketName": {
               "Value": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
               "Export": {
-                "Name": "sls-test-dev-ServerlessDeploymentBucketName"
+                "Name": "sls-pizzaApp-dev-ServerlessDeploymentBucketName"
               }
             },
-            "HelloLambdaFunctionQualifiedArn": {
+            "NewOrderLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg"
+                "Ref": "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590"
               },
               "Export": {
-                "Name": "sls-test-dev-HelloLambdaFunctionQualifiedArn"
+                "Name": "sls-pizzaApp-dev-NewOrderLambdaFunctionQualifiedArn"
               }
             },
             "HttpApiId": {
@@ -250,7 +250,7 @@
                 "Ref": "HttpApi"
               },
               "Export": {
-                "Name": "sls-test-dev-HttpApiId"
+                "Name": "sls-pizzaApp-dev-HttpApiId"
               }
             },
             "HttpApiUrl": {
@@ -275,7 +275,7 @@
                 ]
               },
               "Export": {
-                "Name": "sls-test-dev-HttpApiUrl"
+                "Name": "sls-pizzaApp-dev-HttpApiUrl"
               }
             }
           }
@@ -283,25 +283,25 @@
         "vpc": {}
       },
       "functions": {
-        "hello": {
-          "handler": "handler.hello",
+        "newOrder": {
+          "handler": "handler.newOrder",
           "events": [
             {
               "httpApi": {
-                "path": "/",
-                "method": "get"
+                "path": "/order",
+                "method": "post"
               },
-              "resolvedMethod": "GET",
-              "resolvedPath": "/"
+              "resolvedMethod": "POST",
+              "resolvedPath": "/order"
             }
           ],
-          "name": "test-dev-hello",
+          "name": "pizzaApp-dev-newOrder",
           "package": {},
           "memory": 1024,
           "timeout": 6,
           "runtime": "nodejs20.x",
           "vpc": {},
-          "versionLogicalId": "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg"
+          "versionLogicalId": "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590"
         }
       }
     },
@@ -315,10 +315,10 @@
         "AWSTemplateFormatVersion": "2010-09-09",
         "Description": "The AWS CloudFormation template for this Serverless application",
         "Resources": {
-          "HelloLogGroup": {
+          "NewOrderLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/test-dev-hello"
+              "LogGroupName": "/aws/lambda/pizzaApp-dev-newOrder"
             }
           },
           "IamRoleLambdaExecution": {
@@ -346,7 +346,7 @@
                     "Fn::Join": [
                       "-",
                       [
-                        "test",
+                        "pizzaApp",
                         "dev",
                         "lambda"
                       ]
@@ -364,7 +364,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*"
                           }
                         ]
                       },
@@ -375,7 +375,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*:*"
                           }
                         ]
                       }
@@ -388,7 +388,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "test",
+                    "pizzaApp",
                     "dev",
                     {
                       "Ref": "AWS::Region"
@@ -399,16 +399,16 @@
               }
             }
           },
-          "HelloLambdaFunction": {
+          "NewOrderLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
-                "S3Key": "serverless/test/dev/1759201964608-2025-09-30T03:12:44.608Z/test.zip"
+                "S3Key": "serverless/pizzaApp/dev/1759203570028-2025-09-30T03:39:30.028Z/pizzaApp.zip"
               },
-              "Handler": "handler.hello",
+              "Handler": "handler.newOrder",
               "Runtime": "nodejs20.x",
-              "FunctionName": "test-dev-hello",
+              "FunctionName": "pizzaApp-dev-newOrder",
               "MemorySize": 1024,
               "Timeout": 6,
               "Role": {
@@ -419,23 +419,23 @@
               }
             },
             "DependsOn": [
-              "HelloLogGroup"
+              "NewOrderLogGroup"
             ]
           },
-          "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg": {
+          "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
-                "Ref": "HelloLambdaFunction"
+                "Ref": "NewOrderLambdaFunction"
               },
-              "CodeSha256": "ZsXEDYQrUM0gKpVDnXkFWbegzPHC4o2YpFTv9Wec8qo="
+              "CodeSha256": "1r2XlrkwDIyIyg+t0QmSLGyCBlMulRSBDLkrL+hANrA="
             }
           },
           "HttpApi": {
             "Type": "AWS::ApiGatewayV2::Api",
             "Properties": {
-              "Name": "dev-test",
+              "Name": "dev-pizzaApp",
               "ProtocolType": "HTTP"
             }
           },
@@ -452,12 +452,12 @@
               }
             }
           },
-          "HelloLambdaPermissionHttpApi": {
+          "NewOrderLambdaPermissionHttpApi": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
               "FunctionName": {
                 "Fn::GetAtt": [
-                  "HelloLambdaFunction",
+                  "NewOrderLambdaFunction",
                   "Arn"
                 ]
               },
@@ -489,7 +489,7 @@
               }
             }
           },
-          "HttpApiIntegrationHello": {
+          "HttpApiIntegrationNewOrder": {
             "Type": "AWS::ApiGatewayV2::Integration",
             "Properties": {
               "ApiId": {
@@ -498,7 +498,7 @@
               "IntegrationType": "AWS_PROXY",
               "IntegrationUri": {
                 "Fn::GetAtt": [
-                  "HelloLambdaFunction",
+                  "NewOrderLambdaFunction",
                   "Arn"
                 ]
               },
@@ -506,42 +506,42 @@
               "TimeoutInMillis": 30000
             }
           },
-          "HttpApiRouteGet": {
+          "HttpApiRoutePostOrder": {
             "Type": "AWS::ApiGatewayV2::Route",
             "Properties": {
               "ApiId": {
                 "Ref": "HttpApi"
               },
-              "RouteKey": "GET /",
+              "RouteKey": "POST /order",
               "Target": {
                 "Fn::Join": [
                   "/",
                   [
                     "integrations",
                     {
-                      "Ref": "HttpApiIntegrationHello"
+                      "Ref": "HttpApiIntegrationNewOrder"
                     }
                   ]
                 ]
               }
             },
-            "DependsOn": "HttpApiIntegrationHello"
+            "DependsOn": "HttpApiIntegrationNewOrder"
           }
         },
         "Outputs": {
           "ServerlessDeploymentBucketName": {
             "Value": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
             "Export": {
-              "Name": "sls-test-dev-ServerlessDeploymentBucketName"
+              "Name": "sls-pizzaApp-dev-ServerlessDeploymentBucketName"
             }
           },
-          "HelloLambdaFunctionQualifiedArn": {
+          "NewOrderLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg"
+              "Ref": "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590"
             },
             "Export": {
-              "Name": "sls-test-dev-HelloLambdaFunctionQualifiedArn"
+              "Name": "sls-pizzaApp-dev-NewOrderLambdaFunctionQualifiedArn"
             }
           },
           "HttpApiId": {
@@ -550,7 +550,7 @@
               "Ref": "HttpApi"
             },
             "Export": {
-              "Name": "sls-test-dev-HttpApiId"
+              "Name": "sls-pizzaApp-dev-HttpApiId"
             }
           },
           "HttpApiUrl": {
@@ -575,7 +575,7 @@
               ]
             },
             "Export": {
-              "Name": "sls-test-dev-HttpApiUrl"
+              "Name": "sls-pizzaApp-dev-HttpApiUrl"
             }
           }
         }
@@ -591,7 +591,7 @@
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "service: test\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n\r\nfunctions:\r\n  hello:\r\n    handler: handler.hello\r\n    events:\r\n      - httpApi:\r\n          path: /\r\n          method: get",
+    "serviceRawFile": "service: pizzaApp\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n\r\nfunctions:\r\n  newOrder:\r\n    handler: handler.newOrder\r\n    events:\r\n      - httpApi:\r\n          path: /order\r\n          method: post",
     "command": [
       "deploy"
     ],
@@ -601,44 +601,44 @@
     "userId": "4ca65608-dea2-4e80-a0fd-197a150eadad",
     "userName": "4ca65608-dea2-4e80-a0fd-197a150eadad",
     "serviceProviderAwsAccountId": "508226743662",
-    "serviceProviderAwsCfStackName": "test-dev",
-    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:508226743662:stack/test-dev/594f8f00-9dab-11f0-b45b-1286cc0516c3",
-    "serviceProviderAwsCfStackCreated": "2025-09-30T03:12:51.341Z",
+    "serviceProviderAwsCfStackName": "pizzaApp-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:508226743662:stack/pizzaApp-dev/9433f9f0-9dae-11f0-a6c2-0e77ca9cb95b",
+    "serviceProviderAwsCfStackCreated": "2025-09-30T03:35:58.619Z",
     "serviceProviderAwsCfStackUpdated": null,
     "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
-        "OutputKey": "HelloLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:508226743662:function:test-dev-hello:1",
-        "Description": "Current Lambda function version",
-        "ExportName": "sls-test-dev-HelloLambdaFunctionQualifiedArn"
+        "OutputKey": "HttpApiId",
+        "OutputValue": "r5cdsbd3h3",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-pizzaApp-dev-HttpApiId"
       },
       {
-        "OutputKey": "HttpApiId",
-        "OutputValue": "lmrejqx08b",
-        "Description": "Id of the HTTP API",
-        "ExportName": "sls-test-dev-HttpApiId"
+        "OutputKey": "NewOrderLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:508226743662:function:pizzaApp-dev-newOrder:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-pizzaApp-dev-NewOrderLambdaFunctionQualifiedArn"
       },
       {
         "OutputKey": "ServerlessDeploymentBucketName",
         "OutputValue": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
-        "ExportName": "sls-test-dev-ServerlessDeploymentBucketName"
+        "ExportName": "sls-pizzaApp-dev-ServerlessDeploymentBucketName"
       },
       {
         "OutputKey": "HttpApiUrl",
-        "OutputValue": "https://lmrejqx08b.execute-api.us-east-1.amazonaws.com",
+        "OutputValue": "https://r5cdsbd3h3.execute-api.us-east-1.amazonaws.com",
         "Description": "URL of the HTTP API",
-        "ExportName": "sls-test-dev-HttpApiUrl"
+        "ExportName": "sls-pizzaApp-dev-HttpApiUrl"
       }
     ],
     "compiledCloudFormationTemplate": {
       "AWSTemplateFormatVersion": "2010-09-09",
       "Description": "The AWS CloudFormation template for this Serverless application",
       "Resources": {
-        "HelloLogGroup": {
+        "NewOrderLogGroup": {
           "Type": "AWS::Logs::LogGroup",
           "Properties": {
-            "LogGroupName": "/aws/lambda/test-dev-hello"
+            "LogGroupName": "/aws/lambda/pizzaApp-dev-newOrder"
           }
         },
         "IamRoleLambdaExecution": {
@@ -666,7 +666,7 @@
                   "Fn::Join": [
                     "-",
                     [
-                      "test",
+                      "pizzaApp",
                       "dev",
                       "lambda"
                     ]
@@ -684,7 +684,7 @@
                       ],
                       "Resource": [
                         {
-                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*"
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*"
                         }
                       ]
                     },
@@ -695,7 +695,7 @@
                       ],
                       "Resource": [
                         {
-                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/test-dev*:*:*"
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/pizzaApp-dev*:*:*"
                         }
                       ]
                     }
@@ -708,7 +708,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "test",
+                  "pizzaApp",
                   "dev",
                   {
                     "Ref": "AWS::Region"
@@ -719,16 +719,16 @@
             }
           }
         },
-        "HelloLambdaFunction": {
+        "NewOrderLambdaFunction": {
           "Type": "AWS::Lambda::Function",
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
-              "S3Key": "serverless/test/dev/1759201964608-2025-09-30T03:12:44.608Z/test.zip"
+              "S3Key": "serverless/pizzaApp/dev/1759203570028-2025-09-30T03:39:30.028Z/pizzaApp.zip"
             },
-            "Handler": "handler.hello",
+            "Handler": "handler.newOrder",
             "Runtime": "nodejs20.x",
-            "FunctionName": "test-dev-hello",
+            "FunctionName": "pizzaApp-dev-newOrder",
             "MemorySize": 1024,
             "Timeout": 6,
             "Role": {
@@ -739,23 +739,23 @@
             }
           },
           "DependsOn": [
-            "HelloLogGroup"
+            "NewOrderLogGroup"
           ]
         },
-        "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg": {
+        "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
-              "Ref": "HelloLambdaFunction"
+              "Ref": "NewOrderLambdaFunction"
             },
-            "CodeSha256": "ZsXEDYQrUM0gKpVDnXkFWbegzPHC4o2YpFTv9Wec8qo="
+            "CodeSha256": "1r2XlrkwDIyIyg+t0QmSLGyCBlMulRSBDLkrL+hANrA="
           }
         },
         "HttpApi": {
           "Type": "AWS::ApiGatewayV2::Api",
           "Properties": {
-            "Name": "dev-test",
+            "Name": "dev-pizzaApp",
             "ProtocolType": "HTTP"
           }
         },
@@ -772,12 +772,12 @@
             }
           }
         },
-        "HelloLambdaPermissionHttpApi": {
+        "NewOrderLambdaPermissionHttpApi": {
           "Type": "AWS::Lambda::Permission",
           "Properties": {
             "FunctionName": {
               "Fn::GetAtt": [
-                "HelloLambdaFunction",
+                "NewOrderLambdaFunction",
                 "Arn"
               ]
             },
@@ -809,7 +809,7 @@
             }
           }
         },
-        "HttpApiIntegrationHello": {
+        "HttpApiIntegrationNewOrder": {
           "Type": "AWS::ApiGatewayV2::Integration",
           "Properties": {
             "ApiId": {
@@ -818,7 +818,7 @@
             "IntegrationType": "AWS_PROXY",
             "IntegrationUri": {
               "Fn::GetAtt": [
-                "HelloLambdaFunction",
+                "NewOrderLambdaFunction",
                 "Arn"
               ]
             },
@@ -826,42 +826,42 @@
             "TimeoutInMillis": 30000
           }
         },
-        "HttpApiRouteGet": {
+        "HttpApiRoutePostOrder": {
           "Type": "AWS::ApiGatewayV2::Route",
           "Properties": {
             "ApiId": {
               "Ref": "HttpApi"
             },
-            "RouteKey": "GET /",
+            "RouteKey": "POST /order",
             "Target": {
               "Fn::Join": [
                 "/",
                 [
                   "integrations",
                   {
-                    "Ref": "HttpApiIntegrationHello"
+                    "Ref": "HttpApiIntegrationNewOrder"
                   }
                 ]
               ]
             }
           },
-          "DependsOn": "HttpApiIntegrationHello"
+          "DependsOn": "HttpApiIntegrationNewOrder"
         }
       },
       "Outputs": {
         "ServerlessDeploymentBucketName": {
           "Value": "serverless-framework-deployments-us-east-1-32f8a129-7cc0",
           "Export": {
-            "Name": "sls-test-dev-ServerlessDeploymentBucketName"
+            "Name": "sls-pizzaApp-dev-ServerlessDeploymentBucketName"
           }
         },
-        "HelloLambdaFunctionQualifiedArn": {
+        "NewOrderLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "HelloLambdaVersion1Y9t0JSq0rQT3U3HEjJigumQBxZC0Yc3aBEDNW3lg"
+            "Ref": "NewOrderLambdaVersiontoYWYue0imKKoVrXgLOLl80wo1nzFbKyZCYMXcH590"
           },
           "Export": {
-            "Name": "sls-test-dev-HelloLambdaFunctionQualifiedArn"
+            "Name": "sls-pizzaApp-dev-NewOrderLambdaFunctionQualifiedArn"
           }
         },
         "HttpApiId": {
@@ -870,7 +870,7 @@
             "Ref": "HttpApi"
           },
           "Export": {
-            "Name": "sls-test-dev-HttpApiId"
+            "Name": "sls-pizzaApp-dev-HttpApiId"
           }
         },
         "HttpApiUrl": {
@@ -895,7 +895,7 @@
             ]
           },
           "Export": {
-            "Name": "sls-test-dev-HttpApiUrl"
+            "Name": "sls-pizzaApp-dev-HttpApiUrl"
           }
         }
       }

@@ -1,8 +1,26 @@
-exports.hello = async (event) => {
-  return {
-    statusCode: 200, 
-    body: JSON.stringify({
-        message: 'Hello World!', 
-      }),
-  };
+const { v4: uuidv4 } = require('uuid');
+
+exports.newOrder = async (event) => {
+    const orderId = uuidv4();
+    console.log('New order received:', orderId);
+
+    let orderDetails;
+    try {
+        orderDetails = JSON.parse(event.body);
+    } catch (error) {
+        console.error('Error processing order:', error);
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: 'Failed to process order' }),
+        };
+    }
+
+    console.log('Order details:', orderDetails);
+    const order = { orderId, ...orderDetails };
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: order }),
+    };
+
 }   
