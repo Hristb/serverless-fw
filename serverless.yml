@@ -19,14 +19,12 @@ functions:
            path: /order/{id}
            method: get
 
-  preOrder:
-    handler: handler.preOrder
+  prepOrder:
+    handler: handler.prepOrder
     events:
       - sqs:
           arn:
-            Fn::GetAtt:
-              - PendingOrderQueue
-              - Arn  
+            Fn::GetAtt: [PendingOrderQueue, Arn]  
           batchSize: 1
 
 resources:

@@ -42,7 +42,7 @@ exports.getOrder = async (event) => {
     };
 }
 
-exports.preOrder = async (event) => {
-   console.log('Cola: ',event); 
+exports.prepOrder = async (event) => {
+   console.log(event); 
 return;
 }
