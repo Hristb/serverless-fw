@@ -41,3 +41,8 @@ exports.getOrder = async (event) => {
         body: JSON.stringify({ message: order }),
     };
 }
+
+exports.updateOrder = async (event) => {
+   console.log('Cola: ',event); 
+return;
+}

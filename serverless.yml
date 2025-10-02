@@ -18,3 +18,20 @@ functions:
       - httpApi:
            path: /order/{id}
            method: get
+
+  preOrder:
+    handler: handler.preOrder
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - PendingOrderQueue
+              - Arn  
+          batchSize: 1
+
+resources:
+  Resources:
+    PendingOrderQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: pendingOrdersQueue
