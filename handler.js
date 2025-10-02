@@ -23,4 +23,21 @@ exports.newOrder = async (event) => {
         body: JSON.stringify({ message: order }),
     };
 
-}   
+}  
+
+exports.getOrder = async (event) => {
+    const orderId = event.pathParameters.id;
+
+    const orderDetails = {
+        "pizza": 'Hahuawaian',
+        "customerId": 1,
+        "order_status": "COMPLETED"
+    };  
+
+    const order = { orderId, ...orderDetails };
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: order }),
+    };
+}
