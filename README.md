@@ -23,12 +23,19 @@ Este proyecto utiliza el framework Serverless para desplegar funciones Lambda en
   - Devuelve detalles simulados de la orden (pizza, customerId, estado).
 
 
+
 ### 3. prepOrder
 - **Archivo handler:** `handler.prepOrder`
 - **Evento:** SQS (cola `pendingOrdersQueue`)
 - **Descripción:**
   - Procesa mensajes recibidos desde la cola SQS `pendingOrdersQueue`.
   - Pensada para manejar órdenes pendientes de forma asíncrona.
+
+### 4. sendOrder
+- **Archivo handler:** `handler.sendOrder`
+- **Evento:** (pendiente de configuración de disparador)
+- **Descripción:**
+  - Envía mensajes a la cola SQS `ordersToSendQueue` para gestionar órdenes listas para enviar.
 
 
 ## Estructura de archivos
@@ -54,12 +61,16 @@ sls deploy
 - Serverless Framework instalado globalmente (`npm install -g serverless`)
 
 
+
 ## Variables de entorno
 - `REGION`: Región AWS donde se despliega el servicio.
 - `PENDING_ORDERS_QUEUE`: URL de la cola SQS para órdenes pendientes.
+- `ORDERS_TO_SEND_QUEUE`: URL de la cola SQS para órdenes listas para enviar.
+
 
 ## Recursos AWS creados
 - Cola SQS: `pendingOrdersQueue` para órdenes pendientes.
+- Cola SQS: `ordersToSendQueue` para órdenes listas para enviar.
 
 ## Referencias
 - [Serverless Framework](https://www.serverless.com/)
