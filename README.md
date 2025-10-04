@@ -55,12 +55,20 @@ Este proyecto utiliza el framework Serverless para desplegar funciones Lambda en
 
 
 
-## Despliegue
-Para desplegar las funciones Lambda y recursos (incluyendo la cola SQS) en AWS, ejecuta:
+
+## Despliegue y eliminación de recursos
+Para desplegar las funciones Lambda y recursos (incluyendo la cola SQS y DynamoDB) en AWS, ejecuta:
 
 ```powershell
 sls deploy
 ```
+
+Si deseas eliminar todos los recursos creados por este servicio (funciones Lambda, colas SQS, tablas DynamoDB, etc.), ejecuta:
+
+```powershell
+sls remove
+```
+Esto eliminará todos los recursos asociados en AWS.
 
 
 
