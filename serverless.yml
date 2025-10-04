@@ -19,6 +19,13 @@ provider:
             - "sqs:SendMessage"
           Resource:
             Fn::GetAtt: [OrdersToSendQueue, Arn]
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:GetItem"
+          Resource:
+            Fn::GetAtt: [OrderTable, Arn]  
 
 functions:
   newOrder:
@@ -26,6 +33,8 @@ functions:
     environment:
       PENDING_ORDERS_QUEUE:
         Ref: PendingOrderQueue
+      ORDERS_TABLE:
+        Ref: OrderTable
     events:
       - httpApi:
           path: /order
@@ -33,6 +42,9 @@ functions:
   
   getOrder:
     handler: handler.getOrder
+    environment:
+      ORDERS_TABLE:
+        Ref: OrderTable
     events:
       - httpApi:
            path: /order/{id}
@@ -40,6 +52,9 @@ functions:
 
   prepOrder:
     handler: handler.prepOrder
+    environment:
+      ORDERS_TABLE:
+        Ref: OrderTable
     events:
       - sqs:
           arn:
@@ -61,3 +76,16 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ordersToSendQueue
+    OrderTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Orders
+        AttributeDefinitions:
+          - AttributeName: orderId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: orderId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
