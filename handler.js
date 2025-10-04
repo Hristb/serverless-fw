@@ -22,7 +22,8 @@ exports.newOrder = async (event) => {
     console.log('Order details:', orderDetails);
     const order = { orderId, ...orderDetails };
 
-    await sendTessageToSQS(order);
+    const PENDING_ORDERS_QUEUE_URL = process.env.PENDING_ORDERS_QUEUE;
+    await sendTessageToSQS(order, PENDING_ORDERS_QUEUE_URL);
     return {
         statusCode: 200,
         body: JSON.stringify({ message: order }),
@@ -52,9 +53,23 @@ exports.prepOrder = async (event) => {
 return;
 }
 
-async function sendTessageToSQS(message) {
+exports.sendOrder = async (event) => {
+    console.log(event); 
+
+    const order = {
+        orderId: event.orderId,
+        pizza: event.pizza,
+        customerId: event.pizza
+    }
+
+    const ORDERS_TO_SEND_QUEUE_URL = process.env.ORDERS_TO_SEND_QUEUE;
+    await sendTessageToSQS(order, ORDERS_TO_SEND_QUEUE_URL);
+return;
+}
+
+async function sendTessageToSQS(message,queueUrl) {
     const params = {
-        QueueUrl: process.env.PENDING_ORDERS_QUEUE,
+        QueueUrl: queueUrl,
         MessageBody: JSON.stringify(message),
     }; 
     console.log('Sending message to SQS:', params);

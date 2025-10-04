@@ -14,6 +14,11 @@ provider:
             - "sqs:SendMessage"
           Resource:
             Fn::GetAtt: [PendingOrderQueue, Arn]
+        - Effect: "Allow"
+          Action:
+            - "sqs:SendMessage"
+          Resource:
+            Fn::GetAtt: [OrdersToSendQueue, Arn]
 
 functions:
   newOrder:
@@ -40,6 +45,11 @@ functions:
           arn:
             Fn::GetAtt: [PendingOrderQueue, Arn]  
           batchSize: 1
+  sendOrder:
+    handler: handler.sendOrder
+    environment:
+      ORDERS_TO_SEND_QUEUE:
+        Ref: OrdersToSendQueue
 
 resources:
   Resources:
@@ -47,3 +57,7 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: pendingOrdersQueue
+    OrdersToSendQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ordersToSendQueue
